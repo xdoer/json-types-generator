@@ -9,8 +9,7 @@ export const elementType = (ele: any) => {
   return RegExp.$1.toLowerCase()
 }
 
-export const upFirst = (value: string) =>
-  value.replace(/^[a-z]/, (t) => t.toUpperCase())
+export const upFirst = (value: string) => value.replace(/^[a-z]/, (t) => t.toUpperCase())
 
 export const createProject = (filePath: string) => {
   const project = new Project()

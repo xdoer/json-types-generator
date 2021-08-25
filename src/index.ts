@@ -6,16 +6,15 @@ interface Opt {
   data: string | Record<string, any> | Record<string, any>[]
   interfaceName: string
   outPutPath: string
+  customInterfaceName?(key: string, value: any, data: any): string
 }
 
 export default function(opt: Opt) {
-  const { data, outPutPath, interfaceName } = opt
+  const { data, outPutPath, interfaceName, customInterfaceName } = opt
   const sourceFile = createProject(outPutPath)
 
-  const baseData =
-    elementType(data) === JsonEleType.string ? JSON.parse(data as any) : data
-  const json =
-    elementType(baseData) === JsonEleType.array ? baseData[0] : baseData
+  const baseData = elementType(data) === JsonEleType.string ? JSON.parse(data as any) : data
+  const json = elementType(baseData) === JsonEleType.array ? baseData[0] : baseData
 
   function handleJsonObj(json: Record<string, any>, name: string) {
     const properties: OptionalKind<PropertySignatureStructure>[] = []
@@ -23,21 +22,22 @@ export default function(opt: Opt) {
     for (const key in json) {
       const value = json[key]
       const valueType = elementType(value)
+      const interfaceType = customInterfaceName?.(key, value, json) || upFirst(key)
 
       if (valueType === JsonEleType.array) {
         properties.push({
           name: key,
-          type: `${handleJsonArray(value, upFirst(key))}[]`,
+          type: `${handleJsonArray(value, interfaceType)}[]`,
         })
         continue
       }
 
       if (valueType === JsonEleType.object) {
-        properties.push({ name: key, type: handleJsonObj(value, upFirst(key)) })
+        properties.push({ name: key, type: handleJsonObj(value, interfaceType) })
         continue
       }
 
-      properties.push({ name: key, type: typeof value })
+      properties.push({ name: key, type: elementType(value) })
     }
 
     sourceFile.addInterface({ name, properties }).setIsExported(true)
@@ -49,17 +49,11 @@ export default function(opt: Opt) {
   function handleJsonArray(json: any[], name: string): any {
     const data = json[0]
     const dataType = elementType(data)
-    const baseTypes: string[] = [
-      JsonEleType.string,
-      JsonEleType.number,
-      JsonEleType.boolean,
-    ]
+    const baseTypes: string[] = [JsonEleType.string, JsonEleType.number, JsonEleType.boolean]
 
     if (baseTypes.includes(dataType)) return dataType
 
-    if (dataType === JsonEleType.array) {
-      return `${handleJsonArray(data, name)}[]`
-    }
+    if (dataType === JsonEleType.array) return `${handleJsonArray(data, name)}[]`
 
     return handleJsonObj(data, name)
   }
