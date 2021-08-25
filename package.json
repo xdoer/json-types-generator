@@ -3,13 +3,13 @@
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "description": "a tool which can generate ts types when using restful api",
+  "description": "a json types generator",
   "keywords": [
-    "restful-api",
+    "json",
     "typescript",
     "types"
   ],
-  "repository": "https://github.com/xdoer/restful-api-ts-types-generate",
+  "repository": "https://github.com/xdoer/json-types-generator",
   "files": [
     "dist"
   ],
@@ -43,21 +43,20 @@
     "trailingComma": "es5",
     "arrowParens": "always"
   },
-  "name": "restful-api-ts-types-generate",
+  "name": "json-types-generator",
   "author": "xdoer",
-  "module": "dist/restful-api-ts-types-generate.esm.js",
+  "module": "dist/json-types-generator.esm.js",
   "size-limit": [
     {
-      "path": "dist/restful-api-ts-types-generate.cjs.production.min.js",
+      "path": "dist/json-types-generator.cjs.production.min.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/restful-api-ts-types-generate.esm.js",
+      "path": "dist/json-types-generator.esm.js",
       "limit": "10 KB"
     }
   ],
   "dependencies": {
-    "@prequest/node": "^1.0.4",
     "ts-morph": "^11.0.3"
   },
   "devDependencies": {
