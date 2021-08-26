@@ -43,10 +43,10 @@ jsonTypesGenerator({
 
 | Options             | Type                                                   | Require | Meaning                             |
 | ------------------- | ------------------------------------------------------ | ------- | ----------------------------------- |
-| data                | string \| json object                                  | - [x]   | Json string or object               |
-| outPutPath          | string                                                 | - [x]   | types file output path              |
-| rootInterfaceName   | string                                                 | - [x]   | root interface name you want to get |
-| customInterfaceName | (key: string, value: any, data: any) => string \| void | - [ ]   | custom intermediate interface       |
+| data                | string \| json object                                  | -[x]    | Json string or object               |
+| outPutPath          | string                                                 | -[x]    | types file output path              |
+| rootInterfaceName   | string                                                 | -[x]    | root interface name you want to get |
+| customInterfaceName | (key: string, value: any, data: any) => string \| void | -[ ]    | custom intermediate interface       |
 
 ## Test
 
