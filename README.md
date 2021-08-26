@@ -1,14 +1,14 @@
 # JSON Types Generator
 
-一个 JSON 数据的 typescript 类型生成器
+A Json Types Generator For TypeScript
 
-## 安装
+## Install
 
-```base
+```bash
 yarn add json-types-generator
 ```
 
-## 使用
+## Usage
 
 ```ts
 import jsonTypesGenerator from 'json-types-generator'
@@ -34,16 +34,20 @@ jsonTypesGenerator({
   outPutPath: '/User/xdoer/types.ts',
   rootInterfaceName: 'ChinaRegion',
   customInterfaceName(key, value, data) {
-    return key === 'a' ? 'Province' : key
+    if (key === 'aa') return 'Province'
   },
 })
 ```
 
-## 测试
+## Options
 
-向 `test/data` 文件夹下添加 JSON 文件，运行 `npm test` 后，观察 `test/output` 输出是否符合预期
+| Options             | Type                                                   | Require | Meaning                             |
+| ------------------- | ------------------------------------------------------ | ------- | ----------------------------------- |
+| data                | string \| json object                                  | - [x]   | Json string or object               |
+| outPutPath          | string                                                 | - [x]   | types file output path              |
+| rootInterfaceName   | string                                                 | - [x]   | root interface name you want to get |
+| customInterfaceName | (key: string, value: any, data: any) => string \| void | - [ ]   | custom intermediate interface       |
 
-## 注意事项
+## Test
 
-> - 数组类型的 JSON 数据，只会解析第一项
-> - 数据类型为 null 时，由于不知道具体类型，会填充为 any
+You can add json file to `test/data` folder, and run `npm test` command, then observe whether the output of `test/output` meets expectations
