@@ -1,6 +1,6 @@
+import { SemicolonPreference } from 'typescript'
 import { Project, SourceFile } from 'ts-morph'
 import { join } from 'path'
-import { SemicolonPreference } from 'typescript'
 
 export const elementType = (ele: any) => {
   const typeStr = Object.prototype.toString.call(ele)
@@ -24,3 +24,6 @@ export const saveProject = (sourceFile: SourceFile) => {
   })
   return sourceFile.save()
 }
+
+// 以数字开头的名称，统一加下划线
+export const formatName = (name: string) => name.replace(/^\d/, (_) => `_${_}`).replace(/-/, '_')

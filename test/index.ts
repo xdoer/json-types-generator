@@ -3,7 +3,6 @@ const { promises: fs } = require('fs')
 const { resolve } = require('path')
 
 const getFileName = (name: string) => name.replace(/(\w+).json/, (_, t) => t)
-const formatFileName = (name: string) => name.replace(/-/, '_')
 
 async function main() {
   const dataDir = resolve('./test', 'data')
@@ -13,7 +12,7 @@ async function main() {
     const fileName = getFileName(name)
     return {
       data: require(resolve(dataDir, name)),
-      rootInterfaceName: formatFileName(fileName),
+      rootInterfaceName: fileName,
       outPutPath: resolve('./test', 'output', `${fileName}.types.ts`)
     }
   })

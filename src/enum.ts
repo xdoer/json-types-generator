@@ -4,4 +4,5 @@ export enum JsonEleType {
   boolean = 'boolean',
   array = 'array',
   object = 'object',
+  null = 'null'
 }

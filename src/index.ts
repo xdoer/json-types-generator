@@ -1,23 +1,23 @@
 import { OptionalKind, PropertySignatureStructure } from 'ts-morph'
-import { createProject, saveProject, upFirst, elementType } from './util'
+import { createProject, saveProject, upFirst, elementType, formatName } from './util'
 import { JsonEleType } from './enum'
+import { CommonObj, Opt } from './types'
 
-interface Opt {
-  data: string | Record<string, any> | Record<string, any>[]
-  interfaceName: string
-  outPutPath: string
-  customInterfaceName?(key: string, value: any, data: any): string
-}
+export type Options = Opt
 
-export default function(opt: Opt) {
-  const { data, outPutPath, interfaceName, customInterfaceName } = opt
+export default function (opt: Opt) {
+  const { data, outPutPath, rootInterfaceName, customInterfaceName } = opt
   const sourceFile = createProject(outPutPath)
 
-  const baseData = elementType(data) === JsonEleType.string ? JSON.parse(data as any) : data
-  const json = elementType(baseData) === JsonEleType.array ? baseData[0] : baseData
+  const baseData = elementType(data) === JsonEleType.string ? JSON.parse(data as string) : data
+  const baseDataType = elementType(baseData)
 
-  function handleJsonObj(json: Record<string, any>, name: string) {
+  const json = baseDataType === JsonEleType.array ? baseData[0] : baseData
+
+  function handleJsonObj(json: CommonObj, name: string) {
     const properties: OptionalKind<PropertySignatureStructure>[] = []
+
+    if (elementType(json) === JsonEleType.null) return ''
 
     for (const key in json) {
       const value = json[key]
@@ -37,16 +37,20 @@ export default function(opt: Opt) {
         continue
       }
 
+      if (valueType === JsonEleType.null) {
+        properties.push({ name: key, type: 'any' })
+        continue
+      }
+
       properties.push({ name: key, type: elementType(value) })
     }
 
-    sourceFile.addInterface({ name, properties }).setIsExported(true)
+    sourceFile.addInterface({ name: formatName(name), properties }).setIsExported(true)
 
-    return name
+    return formatName(name)
   }
 
-  // 处理数组类型
-  function handleJsonArray(json: any[], name: string): any {
+  function handleJsonArray(json: any[], name: string): string {
     const data = json[0]
     const dataType = elementType(data)
     const baseTypes: string[] = [JsonEleType.string, JsonEleType.number, JsonEleType.boolean]
@@ -58,7 +62,7 @@ export default function(opt: Opt) {
     return handleJsonObj(data, name)
   }
 
-  handleJsonObj(json, interfaceName)
+  handleJsonObj(json, rootInterfaceName)
 
   return saveProject(sourceFile)
 }
