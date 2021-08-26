@@ -32,6 +32,18 @@ const jsonStr = `
 jsonTypesGenerator({
   data: jsonStr,
   outPutPath: '/User/xdoer/types.ts',
-  interfaceName: 'ChinaRegion',
+  rootInterfaceName: 'ChinaRegion',
+  customInterfaceName(key, value, data) {
+    return key === 'a' ? 'Province' : key
+  },
 })
 ```
+
+## 测试
+
+向 `test/data` 文件夹下添加 JSON 文件，运行 `npm test` 后，观察 `test/output` 输出是否符合预期
+
+## 注意事项
+
+> - 数组类型的 JSON 数据，只会解析第一项
+> - 数据类型为 null 时，由于不知道具体类型，会填充为 any
