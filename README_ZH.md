@@ -65,3 +65,7 @@ jsonTypesGenerator({
 
 > - 数组类型的 JSON 数据，只会解析第一项
 > - 数据类型为 null 时，由于不知道具体类型，会填充为 any
+
+## 其他
+
+如何在 Restful-API 中使用类型生成？请看[这里](https://github.com/xdoer/PreQuest/tree/main/packages/response-types-generator)

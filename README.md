@@ -52,3 +52,7 @@ jsonTypesGenerator({
 ## Test
 
 You can add json file to `test/data` folder, and run `npm test` command, then observe whether the output of `test/output` meets expectations
+
+## Other
+
+How to use this in Restful-API ? See [here](https://github.com/xdoer/PreQuest/tree/main/packages/response-types-generator)
