@@ -1,5 +1,4 @@
-import { SemicolonPreference } from 'typescript'
-import { Project, SourceFile } from 'ts-morph'
+import { Project, SourceFile, ts } from 'ts-morph'
 import { join } from 'path'
 
 export const elementType = (ele: any) => {
@@ -20,7 +19,7 @@ export const createProject = (filePath: string) => {
 export const saveProject = (sourceFile: SourceFile) => {
   sourceFile.formatText({
     indentSize: 2,
-    semicolons: SemicolonPreference.Remove,
+    semicolons: ts.SemicolonPreference.Remove,
   })
   return sourceFile.save()
 }
