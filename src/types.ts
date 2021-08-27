@@ -4,5 +4,5 @@ export interface Opt {
   data: string | CommonObj | CommonObj[]
   rootInterfaceName: string
   outPutPath: string
-  customInterfaceName?(key: string, value: CommonObj, data: CommonObj): string
+  customInterfaceName?(key: string, value: CommonObj, data: CommonObj): string | void
 }
