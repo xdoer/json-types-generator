@@ -14,19 +14,20 @@ yarn add json-types-generator
 import jsonTypesGenerator from 'json-types-generator'
 
 const jsonStr = `
- [
-  {
-    "province": "北京市",
-    "city": ["北京市"],
-    "counties": [
-      [
-        "东城区",
-        "西城区",
-        "朝阳区",
-      ]
-    ]
-  }
-]
+{
+  "date": "2021-08-28",
+  "season": "ordinary",
+  "season_week": 21,
+  "celebrations": [
+    {
+      "title": "Saint Augustine of Hippo, bishop and doctor of the Church",
+      "colour": "white",
+      "rank": "memorial",
+      "rank_num": 3.1
+    }
+  ],
+  "weekday": "saturday"
+}
 `
 
 jsonTypesGenerator({
