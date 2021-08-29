@@ -2,7 +2,7 @@ const jsonTypesGenerator = require('../dist')
 const { promises: fs } = require('fs')
 const { resolve } = require('path')
 
-const getFileName = (name: string) => name.replace(/(\w+).json/, (_, t) => t)
+const getFileName = (name: string) => name.replace(/(\w+).json/, (_, t) => t).replace(/^[a-z]/, g => g.toUpperCase())
 
 async function main() {
   const dataDir = resolve('./test', 'data')

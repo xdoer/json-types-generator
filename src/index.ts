@@ -1,66 +1,77 @@
 import { OptionalKind, PropertySignatureStructure } from 'ts-morph'
 import { createProject, saveProject, upFirst, elementType, formatName } from './util'
 import { JsonEleType } from './enum'
-import { CommonObj, Opt } from './types'
+import { Opt, PassOptions } from './types'
 
 export type Options = Opt
 
+const baseTypes: string[] = [JsonEleType.string, JsonEleType.number, JsonEleType.boolean]
+
 export default function (opt: Opt) {
   const { data, outPutPath, rootInterfaceName, customInterfaceName } = opt
-  const sourceFile = createProject(outPutPath)
-
   const baseData = elementType(data) === JsonEleType.string ? JSON.parse(data as string) : data
   const baseDataType = elementType(baseData)
 
-  baseDataType === JsonEleType.array ? handleJsonArray(baseData, rootInterfaceName) : handleJsonObj(baseData, rootInterfaceName)
+  if (baseTypes.includes(baseDataType) || baseDataType === JsonEleType.null) return Promise.resolve()
 
-  function handleJsonObj(json: CommonObj, name: string) {
-    const properties: OptionalKind<PropertySignatureStructure>[] = []
-
-    if (elementType(json) === JsonEleType.null) return ''
-
-    for (const key in json) {
-      const value = json[key]
-      const valueType = elementType(value)
-      const interfaceType = customInterfaceName?.(key, value, json) || upFirst(key)
-
-      if (valueType === JsonEleType.array) {
-        properties.push({
-          name: key,
-          type: `${handleJsonArray(value, interfaceType)}[]`,
-        })
-        continue
-      }
-
-      if (valueType === JsonEleType.object) {
-        properties.push({ name: key, type: handleJsonObj(value, interfaceType) })
-        continue
-      }
-
-      if (valueType === JsonEleType.null) {
-        properties.push({ name: key, type: 'any' })
-        continue
-      }
-
-      properties.push({ name: key, type: elementType(value) })
-    }
-
-    sourceFile.addInterface({ name: formatName(name), properties }).setIsExported(true)
-
-    return formatName(name)
+  const sourceFile = createProject(outPutPath)
+  const passOptions: PassOptions = {
+    data: baseData,
+    name: rootInterfaceName,
+    sourceFile,
+    customInterfaceName,
   }
 
-  function handleJsonArray(json: any[], name: string): string {
-    const data = json[0]
-    const dataType = elementType(data)
-    const baseTypes: string[] = [JsonEleType.string, JsonEleType.number, JsonEleType.boolean]
-
-    if (baseTypes.includes(dataType)) return dataType
-
-    if (dataType === JsonEleType.array) return `${handleJsonArray(data, name)}[]`
-
-    return handleJsonObj(data, name)
-  }
+  baseDataType === JsonEleType.array ? handleJsonArray(passOptions) : handleJsonObj(passOptions)
 
   return saveProject(sourceFile)
+}
+
+
+function handleJsonObj(opt: PassOptions) {
+  const { data, name, sourceFile, customInterfaceName } = opt
+  const properties: OptionalKind<PropertySignatureStructure>[] = []
+
+  for (const key in data) {
+    const value = data[key]
+    const valueType = elementType(value)
+    const interfaceType = customInterfaceName?.(key, value, data) || upFirst(key)
+
+    if (valueType === JsonEleType.array) {
+      properties.push({
+        name: key,
+        type: `${handleJsonArray({ ...opt, data: value, name: interfaceType })}[]`,
+      })
+      continue
+    }
+
+    if (valueType === JsonEleType.object) {
+      properties.push({ name: key, type: handleJsonObj({ ...opt, data: value, name: interfaceType }) })
+      continue
+    }
+
+    if (valueType === JsonEleType.null) {
+      properties.push({ name: key, type: 'any' })
+      continue
+    }
+
+    properties.push({ name: key, type: elementType(value) })
+  }
+
+  sourceFile.addInterface({ name: formatName(name), properties }).setIsExported(true)
+
+  return formatName(name)
+}
+
+function handleJsonArray(opt: PassOptions): string {
+  const data = opt.data[0]
+  const dataType = elementType(data)
+
+  if (dataType === JsonEleType.null) return 'any'
+
+  if (baseTypes.includes(dataType)) return dataType
+
+  if (dataType === JsonEleType.array) return `${handleJsonArray({ ...opt, data })}[]`
+
+  return handleJsonObj({ ...opt, data })
 }
