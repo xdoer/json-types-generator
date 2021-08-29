@@ -12,7 +12,7 @@ export default function (opt: Opt) {
   const baseData = elementType(data) === JsonEleType.string ? JSON.parse(data as string) : data
   const baseDataType = elementType(baseData)
 
-  const json = baseDataType === JsonEleType.array ? baseData[0] : baseData
+  baseDataType === JsonEleType.array ? handleJsonArray(baseData, rootInterfaceName) : handleJsonObj(baseData, rootInterfaceName)
 
   function handleJsonObj(json: CommonObj, name: string) {
     const properties: OptionalKind<PropertySignatureStructure>[] = []
@@ -61,8 +61,6 @@ export default function (opt: Opt) {
 
     return handleJsonObj(data, name)
   }
-
-  handleJsonObj(json, rootInterfaceName)
 
   return saveProject(sourceFile)
 }
