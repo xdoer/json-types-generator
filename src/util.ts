@@ -10,10 +10,10 @@ export const elementType = (ele: any) => {
 
 export const upFirst = (value: string) => value.replace(/^[a-z]/, (t) => t.toUpperCase())
 
-export const createProject = (filePath: string) => {
+export const createProject = (filePath: string, overwrite = true) => {
   const project = new Project()
   const outPath = join(filePath)
-  return project.createSourceFile(outPath, undefined, { overwrite: true })
+  return project.createSourceFile(outPath, undefined, { overwrite })
 }
 
 export const saveProject = (sourceFile: SourceFile) => {

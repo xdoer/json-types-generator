@@ -47,6 +47,7 @@ jsonTypesGenerator({
 | data                | string \| json object                                  | -[x]    | Json string or object               |
 | outPutPath          | string                                                 | -[x]    | types file output path              |
 | rootInterfaceName   | string                                                 | -[x]    | root interface name you want to get |
+| overwrite           | boolean, default is true                               | -[ ]    | rewrite file when file is exist     |
 | customInterfaceName | (key: string, value: any, data: any) => string \| void | -[ ]    | custom intermediate interface       |
 
 ## Test

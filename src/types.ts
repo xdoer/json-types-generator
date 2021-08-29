@@ -8,6 +8,7 @@ export interface Opt {
   data: string | CommonObj | CommonObj[]
   rootInterfaceName: string
   outPutPath: string
+  overwrite?: boolean
   customInterfaceName?: CustomInterfaceName
 }
 

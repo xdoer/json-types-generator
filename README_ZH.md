@@ -50,12 +50,13 @@ jsonTypesGenerator({
 
 ## 参数
 
-| 名称                | 类型                                                   | 必填 | 含义                     |
-| ------------------- | ------------------------------------------------------ | ---- | ------------------------ |
-| data                | string \| json object                                  | -[x] | Json 字符串或对象        |
-| outPutPath          | string                                                 | -[x] | 类型文件输出路径         |
-| rootInterfaceName   | string                                                 | -[x] | 导出的根 interface 名称  |
-| customInterfaceName | (key: string, value: any, data: any) => string \| void | -[ ] | 自定义中间产物 interface |
+| 名称                | 类型                                                   | 必填 | 含义                             |
+| ------------------- | ------------------------------------------------------ | ---- | -------------------------------- |
+| data                | string \| json object                                  | -[x] | Json 字符串或对象                |
+| outPutPath          | string                                                 | -[x] | 类型文件输出路径                 |
+| rootInterfaceName   | string                                                 | -[x] | 导出的根 interface 名称          |
+| overwrite           | boolean, default is true                               | -[ ] | 当 outPutPath 有文件，则覆写文件 |
+| customInterfaceName | (key: string, value: any, data: any) => string \| void | -[ ] | 自定义中间产物 interface         |
 
 ## 测试
 

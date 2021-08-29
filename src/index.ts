@@ -8,13 +8,13 @@ export type Options = Opt
 const baseTypes: string[] = [JsonEleType.string, JsonEleType.number, JsonEleType.boolean]
 
 export default function (opt: Opt) {
-  const { data, outPutPath, rootInterfaceName, customInterfaceName } = opt
+  const { data, outPutPath, rootInterfaceName, customInterfaceName, overwrite } = opt
   const baseData = elementType(data) === JsonEleType.string ? JSON.parse(data as string) : data
   const baseDataType = elementType(baseData)
 
   if (baseTypes.includes(baseDataType) || baseDataType === JsonEleType.null) return Promise.resolve()
 
-  const sourceFile = createProject(outPutPath)
+  const sourceFile = createProject(outPutPath, overwrite)
   const passOptions: PassOptions = {
     data: baseData,
     name: rootInterfaceName,
@@ -26,7 +26,6 @@ export default function (opt: Opt) {
 
   return saveProject(sourceFile)
 }
-
 
 function handleJsonObj(opt: PassOptions) {
   const { data, name, sourceFile, customInterfaceName } = opt
