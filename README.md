@@ -35,20 +35,21 @@ jsonTypesGenerator({
   outPutPath: '/User/xdoer/types.ts',
   rootInterfaceName: 'ChinaRegion',
   customInterfaceName(key, value, data) {
-    if (key === 'aa') return 'Province'
+    if (key === 'celebrations') return 'Province'
+    return key
   },
 })
 ```
 
 ## Options
 
-| Options             | Type                                                   | Require | Meaning                             |
-| ------------------- | ------------------------------------------------------ | ------- | ----------------------------------- |
-| data                | string \| json object                                  | -[x]    | Json string or object               |
-| outPutPath          | string                                                 | -[x]    | types file output path              |
-| rootInterfaceName   | string                                                 | -[x]    | root interface name you want to get |
-| overwrite           | boolean, default is true                               | -[ ]    | rewrite file when file is exist     |
-| customInterfaceName | (key: string, value: any, data: any) => string \| void | -[ ]    | custom intermediate interface       |
+| Options             | Type                                           | Require | Meaning                             |
+| ------------------- | ---------------------------------------------- | ------- | ----------------------------------- |
+| data                | string \| json object                          | -[x]    | Json string or object               |
+| outPutPath          | string                                         | -[x]    | types file output path              |
+| rootInterfaceName   | string                                         | -[x]    | root interface name you want to get |
+| overwrite           | boolean, default is true                       | -[ ]    | rewrite file when file is exist     |
+| customInterfaceName | (key: string, value: any, data: any) => string | -[ ]    | custom intermediate interface       |
 
 ## Test
 
