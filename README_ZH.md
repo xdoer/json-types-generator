@@ -30,23 +30,7 @@ const jsonStr = `
 }
 `
 
-jsonTypesGenerator({
-  // Json 字符串或对象
-  data: jsonStr,
-
-  // 输出路径
-  outPutPath: '/User/xdoer/types.ts',
-
-  // 导出的根 interface 名称
-  rootInterfaceName: 'ChinaRegion',
-
-  // 自定义中间产物类型名称
-  customInterfaceName(key, value, data) {
-    // 如果 key 是 celebrations, 且值为对象类型，则 interface 的 name 为 celebrations。默认为 key 的 upFirst 值 Aa
-    if (key === 'celebrations') return 'Province'
-    return key
-  },
-})
+jsonTypesGenerator(JSON.parse(jsonStr), 'Result')
 ```
 
 ## 参数

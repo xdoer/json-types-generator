@@ -1,76 +1,71 @@
-import { OptionalKind, PropertySignatureStructure } from 'ts-morph'
-import { createProject, saveProject, upFirst, elementType, formatName } from './util'
-import { JsonEleType } from './enum'
-import { Opt, PassOptions } from './types'
+import { OptionalKind, PropertySignatureStructure, Project } from 'ts-morph'
+import { upFirst, getName, is } from './utils'
 
-export type Options = Opt
+const project = new Project({ useInMemoryFileSystem: true })
+const sourceFile = project.createSourceFile('index.ts', undefined, { overwrite: true })
 
-const baseTypes: string[] = [JsonEleType.string, JsonEleType.number, JsonEleType.boolean]
-
-export default function (opt: Opt) {
-  const { data, outPutPath, rootInterfaceName, customInterfaceName, overwrite } = opt
-  const baseData = elementType(data) === JsonEleType.string ? JSON.parse(data as string) : data
-  const baseDataType = elementType(baseData)
-
-  if (baseTypes.includes(baseDataType) || baseDataType === JsonEleType.null) return Promise.resolve()
-
-  const sourceFile = createProject(outPutPath, overwrite)
-  const passOptions: PassOptions = {
-    data: baseData,
-    name: rootInterfaceName,
-    sourceFile,
-    customInterfaceName,
-  }
-
-  baseDataType === JsonEleType.array ? handleJsonArray(passOptions) : handleJsonObj(passOptions)
-
-  return saveProject(sourceFile)
-}
-
-function handleJsonObj(opt: PassOptions) {
-  const { data, name, sourceFile, customInterfaceName } = opt
+function getProperties(data: any): any {
   const properties: OptionalKind<PropertySignatureStructure>[] = []
 
   for (const key in data) {
-    const value = data[key]
-    const valueType = elementType(value)
-    const interfaceType = customInterfaceName?.(key, value, data) || upFirst(key)
+    const _value = data[key]
+    const _key = key
 
-    if (valueType === JsonEleType.array) {
-      properties.push({
-        name: key,
-        type: `${handleJsonArray({ ...opt, data: value, name: interfaceType })}[]`,
-      })
-      continue
+    switch (is(_value)) {
+      case 'string':
+      case 'number':
+      case 'boolean':
+        properties.push({ name: _key, type: is(_value) })
+        continue
+      case 'null':
+      case 'undefined':
+        properties.push({ name: _key, type: 'any' })
+        continue
+      case 'array':
+        properties.push({ name: _key, type: `${upFirst(_key)}[]` })
+        addType(_value[0], upFirst(_key), true)
+        continue
+      default:
+        properties.push({ name: _key, type: upFirst(_key) })
+        addType(_value, upFirst(_key))
     }
-
-    if (valueType === JsonEleType.object) {
-      properties.push({ name: key, type: handleJsonObj({ ...opt, data: value, name: interfaceType }) })
-      continue
-    }
-
-    if (valueType === JsonEleType.null) {
-      properties.push({ name: key, type: 'any' })
-      continue
-    }
-
-    properties.push({ name: key, type: elementType(value) })
   }
 
-  sourceFile.addInterface({ name: formatName(name), properties }).setIsExported(true)
-
-  return formatName(name)
+  return properties
 }
 
-function handleJsonArray(opt: PassOptions): string {
-  const data = opt.data[0]
-  const dataType = elementType(data)
+function addType(data: any, baseName = 'Result', isArray = false) {
+  switch (is(data)) {
+    case 'string':
+    case 'number':
+    case 'boolean':
+      sourceFile
+        .addTypeAlias({ name: baseName, type: `${is(data)}${isArray ? '[]' : ''}` })
+        .setIsExported(true)
+      break
+    case 'undefined':
+    case 'null':
+      sourceFile
+        .addTypeAlias({ name: baseName, type: `any${isArray ? '[]' : ''}` })
+        .setIsExported(true)
+      break
+    case 'array':
+      addType(data[0], baseName, true)
+      break
+    default:
+      if (isArray) {
+        const name = upFirst(getName())
+        sourceFile.addTypeAlias({ name: baseName, type: name }).setIsExported(true)
+        sourceFile.addInterface({ name: name, properties: getProperties(data) }).setIsExported(true)
+      } else {
+        sourceFile
+          .addInterface({ name: baseName, properties: getProperties(data) })
+          .setIsExported(true)
+      }
+  }
+}
 
-  if (dataType === JsonEleType.null) return 'any'
-
-  if (baseTypes.includes(dataType)) return dataType
-
-  if (dataType === JsonEleType.array) return `${handleJsonArray({ ...opt, data })}[]`
-
-  return handleJsonObj({ ...opt, data })
+export default function main(data: any, name = 'Result') {
+  addType(data, name, Array.isArray(data))
+  return sourceFile.getSourceFile().getText(true)
 }
